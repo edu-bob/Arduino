@@ -22,11 +22,22 @@ Button armButton;
 Piston legPiston;
 Piston armPiston;
 
+// displayMode: 0=show button press counts; 1=show time delay value
 int displayMode;
 unsigned long nextDisplaySwitch;
 
 int buttonDelay;
 
+/*
+ ** setup - called once
+ *
+ * The way I set up helper classes (like Button and Piston) is that each also
+ * has a setup() and loop() function that take zero parameters.  These aren't
+ * always used but I've just adopted it as a style.  If a class needs some
+ * initialization information (like pin numbers) then I also define a begin()
+ * method that finishes the setup chore.
+ */
+ 
 void setup()
 {  
   lcd.begin(16,2);
@@ -70,40 +81,51 @@ void loop()
  
 void swingLogic()
 {
+  // Was an arm button press passed through?
   if ( armButton.wasPressed() ) {
     armPiston.extend();
   } else {
-    if ( !armButton.isDown() ) {
+    if ( armPiston.isExtended() && !armButton.isDown() ) {
       armPiston.retract();
     }
   }
   if ( legButton.wasPressed() ) {
     legPiston.extend();
   } else {
-    if ( !legButton.isDown() ) {
+    if ( legPiston.isExtended() && !legButton.isDown() ) {
       legPiston.retract();
     }
   }
-  if ( armButton.isChanged() || legButton.isChanged() )  showDisplay();
   
-  // Display the time delay if it changed
+  // If any of the counters changed, update the display
+  if ( displayMode == 0 && (armButton.isChanged() || legButton.isChanged()) )  showDisplay();
+  
+  // Display the time delay if it changed by at least ten (otherwise the display flutters)
   
   unsigned long newDelay = legButton.getDelay();
   int delta = (newDelay > buttonDelay) ? (newDelay-buttonDelay) : (buttonDelay-newDelay);
   
   if ( delta >= 10 ) {
     buttonDelay = newDelay;
+    // Switch the display to "delay mode" for two seconds and refresh the display
     displayMode = 1;
     nextDisplaySwitch = millis()+2000ul;
     showDisplay();
   }
+  
+  // Check if it's time to switch back to normal display mode, if not already in normal mode
   if ( displayMode != 0 && millis() > nextDisplaySwitch ) {
     displayMode = 0;
     showDisplay();
   }
 }
   
-
+/*
+ ** showDisplay - update hte LCD Display
+ *
+ * What gets shown depends on the value of displayMode.
+ */
+ 
 void showDisplay()
 {
   char buf[17];

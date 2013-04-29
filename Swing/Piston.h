@@ -8,8 +8,10 @@ class Piston {
     void begin(int);
     void extend(void);
     void retract(void);
+    bool isExtended(void) { return extended; };
   private:
     int pin;
+    bool extended;
 };
 
 #endif
