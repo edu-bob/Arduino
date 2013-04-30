@@ -10,8 +10,7 @@ void Piston::begin(int _pin)
 {
   pin = _pin;
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, 0);
-  extended = false;
+  retract();
 }
 
 void Piston::loop()

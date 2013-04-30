@@ -3,7 +3,7 @@
 #define BUTTON_DOWN LOW
 #define BUTTON_UP HIGH
 
-#define BUTTON_DELAY_MAX 1500ul
+#define BUTTON_DELAY_MAX 2000ul
 #define BUTTON_DELAY_MIN 100ul
 
 void Button::setup()
@@ -14,7 +14,7 @@ void Button::setup()
 }
 
 /*
- * begin - initialization
+ * begin - initialization; save the pin numbers
  */
  
 void Button::begin(int _pin, int _delayPin)
