@@ -51,9 +51,7 @@ void setup()
     jumper.on();
   }
   
-  // There is a single time delay pot for both legs and arms, so we can get
-  // the value from either object
-  buttonDelay = button.getDelay();
+   buttonDelay = button.getDelay();
 
 }
 
@@ -95,6 +93,7 @@ void loop()
      buttonDelay = newDelay;
      showDisplay();
    }
+   if (options.isChanged()) showDisplay();
 }
 
 void showDisplay()
@@ -103,9 +102,14 @@ void showDisplay()
   display.clear();
   display.setCursor(0,0);
   display.print(DisplayBuf);
-  display.setCursor(0,1);
-  display.print("Delay:");
-  display.print(buttonDelay);
-  display.print("ms");
+  display.printf(0,1,"Delay: %d ms", buttonDelay);
+  display.print(0,2,"Options: ");
+  for (int i=0 ; i<8 ; i++ ) {
+    if(options.getValue(i)) {
+      display.print("Y");
+    } else {
+      display.print(".");
+    }
+  }
 }
 

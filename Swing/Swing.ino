@@ -134,7 +134,7 @@ void swingLogic()
 }
   
 /*
- ** showDisplay - update hte LCD Display
+ ** showDisplay - update the LCD Display
  *
  * What gets shown depends on the value of displayMode.
  */

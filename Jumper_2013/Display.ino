@@ -26,6 +26,13 @@ void Display::clear()
 void Display::update()
 {
 }
+
+void Display::print(int c, int r, char *str)
+{
+  lcd->setCursor(c,r);
+  lcd->print(str);
+}
+
 void Display::print(char *str)
 {
   lcd->print(str);
@@ -71,10 +78,11 @@ void Display::print(char *line1, char *line2, char *line3, char *line4)
 
 void Display::printf(int c, int r, char *fmt, ... )
 {
-  char tmp[128]; // resulting string limited to 128 chars
+  char buf[DISPLAY_COLUMNS*DISPLAY_ROWS+1];
   va_list args;
-  va_start (args, fmt );
-  vsnprintf(tmp, 128, fmt, args);
-  va_end (args);
+  va_start(args, fmt);
+  vsnprintf(buf, 128, fmt, args);
+  va_end(args);
   lcd->setCursor(c,r);
+  lcd->print(buf);
 }

@@ -15,12 +15,13 @@ class Display {
     void loop();
     void clear();
     void update();
+    void print(int, int, char *);
     void print(int);
     void print(char *);
     void print(char *, char *);
     void print(char *, char *, char *);
     void print(char *, char *, char *, char *);
-    void printf(int, int, char *, ... )
+    void printf(int, int, char *, ... );
     void setCursor(uint8_t, uint8_t);
   private:
     LiquidCrystal *lcd;

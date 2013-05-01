@@ -90,6 +90,7 @@ void loop()
 // N - turn on
 // F - turn off
 // C - clear
+// eSTR - echo STR back on the serial line
 // xNUM - use HEX number as the 64 bit value to load
 // t# - run test #
 
@@ -123,7 +124,7 @@ void ScoreBoard(void)
       if ( selfTest.isRunning() ) selfTest.stop();
       digits.clear();
       Serial.println(F("OK"));
-    } else if ( buf[0] == 'e' ) {
+    } else if ( buf[0] == 'e' ) { //echo
       if ( selfTest.isRunning() ) selfTest.stop();
       Serial.println(buf+1);
     } else if ( buf[0] == 's' ){
