@@ -3,19 +3,30 @@
 #define BUTTON_DOWN LOW
 #define BUTTON_UP HIGH
 
+#define BUTTON_DELAY_MAX 2000ul
+#define BUTTON_DELAY_MIN 100ul
+
 void Button::setup()
 {
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  lastState = state();
-  pushed = false;
-  minInterval = 0;
+  pressesRaw = 0;
+  pressesFiltered = 0;
+  changed = false;
 }
 
 /*
- * loop - called on each main loop.
- *
+ * begin - initialization; save the pin numbers
  */
  
+void Button::begin(int _pin, int _delayPin)
+{
+  pin = _pin;
+  delayPin = _delayPin;
+  pinMode(pin, INPUT_PULLUP);
+  
+  lastState = state();
+  pushed = false;
+}
+
 void Button::loop()
 {
   /*
@@ -24,27 +35,21 @@ void Button::loop()
    * event every minInterval milliseconds
    */
   if ( lastState == BUTTON_UP && isDown() ) {
-      
+     pressesRaw++;
+     changed = true;
     /*
      * On a transition from up to down, denote it as a button push only if
      * enough time has gone by.
      */
       
-    if ( millis() >= lastTimePushed + minInterval ) {
+    if ( millis() >= lastTimePushed + getDelay() ) {
+      pressesFiltered++;
+      changed = true;
       pushed = true;
       lastTimePushed = millis();
     }
   }
   lastState = state();
-}
-
-/**
- * setMinInterval - set the minimum interval (in milliseconds) between pushes
- */
- 
-void Button::setMinInterval(unsigned int _minInterval)
-{
-  minInterval = _minInterval;
 }
 
 
@@ -70,9 +75,23 @@ bool Button::isDown()
   return state() == BUTTON_DOWN;
 }
 
-unsigned int state()
+unsigned int Button::state()
 {
-  return digitalRead(BUTTON_PIN);
+  return digitalRead(pin);
+}
+
+unsigned long Button::getDelay()
+{
+  unsigned long pot = analogRead(delayPin);
+  unsigned long delay = BUTTON_DELAY_MIN + (unsigned long)(pot * (unsigned long)(BUTTON_DELAY_MAX-BUTTON_DELAY_MIN)) / 1023ul;
+  return (delay > BUTTON_DELAY_MAX ? BUTTON_DELAY_MAX : delay);
+}
+
+bool Button::isChanged()
+{
+  bool saveChanged = changed;
+  changed = false;
+  return saveChanged;
 }
 
 //--------------------------------------------------------

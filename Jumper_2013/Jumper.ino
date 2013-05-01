@@ -9,8 +9,13 @@ void Jumper::setup()
 
 void Jumper::loop()
 {
-  pinMode(JUMPER_LEGS_PIN, OUTPUT);
-  pinMode(JUMPER_LEGS_PIN, 0);
+}
+
+void Jumper::begin(int _pin)
+{
+  pin = _pin;
+  pinMode(pin, OUTPUT);
+  pinMode(pin, 0);
 }
 
 void Jumper::jump()
