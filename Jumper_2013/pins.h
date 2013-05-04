@@ -10,7 +10,11 @@
 // Push Button pin
 // 
 #define BUTTON_PIN 8
+
+// Miscellaneous pins
+
 #define DELAY_POT_PIN A0
+#define DISABLE_SWITCH_PIN 36
 
 // LCD pins
 
