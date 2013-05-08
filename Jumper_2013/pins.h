@@ -13,6 +13,10 @@
 // 
 #define BUTTON_PIN 47
 
+// Height sensor
+
+#define SENSOR_PIN 0
+
 // Miscellaneous pins
 
 #define DELAY_POT_PIN A0
