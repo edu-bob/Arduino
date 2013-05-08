@@ -78,11 +78,18 @@ void Display::print(char *line1, char *line2, char *line3, char *line4)
 
 void Display::printf(int c, int r, char *fmt, ... )
 {
-  char buf[DISPLAY_COLUMNS*DISPLAY_ROWS+1];
   va_list args;
   va_start(args, fmt);
-  vsnprintf(buf, 128, fmt, args);
+  vsnprintf(buffer, 128, fmt, args);
   va_end(args);
   lcd->setCursor(c,r);
-  lcd->print(buf);
+  lcd->print(buffer);
+}
+void Display::printf(char *fmt, ... )
+{
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(buffer, 128, fmt, args);
+  va_end(args);
+  lcd->print(buffer);
 }

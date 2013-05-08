@@ -40,7 +40,7 @@ void Options::begin2()
   int i;
   for ( i=0 ; i<OPTIONS_COUNT ; i++ ) {
     pinMode(pins[i], INPUT_PULLUP);
-    values[i] = digitalRead(pins[i]);
+    values[i] = !digitalRead(pins[i]);
   }
 }
 
@@ -49,7 +49,7 @@ void Options::loop()
   if ( millis() >= nextSampleTime ) {
     int i;
     for ( i=0 ; i<OPTIONS_COUNT ; i++ ) {
-      int value = digitalRead(pins[i]);
+      int value = !digitalRead(pins[i]);
       if ( value != values[i] ) changed = true;
       values[i] = value;
     }

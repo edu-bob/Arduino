@@ -6,7 +6,9 @@ class Jumper {
     void setup(void);
     void loop(void);
     void begin(int);
-    void jump(void);
+    void extend(void);
+    void retract(void);
+    bool isExtended(void) { return extended; };
     void off(void);
     void on(void);
     
@@ -15,6 +17,7 @@ class Jumper {
   private:
     int pin;
     bool active;
+    bool extended;
     unsigned int testLastState;
     unsigned long testStartTime;
 };

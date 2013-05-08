@@ -3,8 +3,8 @@
 #define BUTTON_DOWN LOW
 #define BUTTON_UP HIGH
 
-#define BUTTON_DELAY_MAX 2000ul
-#define BUTTON_DELAY_MIN 100ul
+#define BUTTON_DELAY_MAX 1000ul
+#define BUTTON_DELAY_MIN 200ul
 
 void Button::setup()
 {
@@ -25,17 +25,26 @@ void Button::begin(int _pin, int _delayPin)
   
   lastState = state();
   pushed = false;
+  enabled = true;
 }
+
+//
+// Called once per cycle.
+// If the button was pressed, flag "changed"
+// But only count presses that were passed along if "enabled"
+//
 
 void Button::loop()
 {
+  changed = false;
+  
   /*
    * Look for button transitions, up to down.  The time interval is only checked after
    * an up-down transition to prevent holding the button down from triggering an
    * event every minInterval milliseconds
    */
   if ( lastState == BUTTON_UP && isDown() ) {
-     pressesRaw++;
+     if ( enabled ) pressesRaw++;
      changed = true;
     /*
      * On a transition from up to down, denote it as a button push only if
@@ -44,11 +53,14 @@ void Button::loop()
       
     if ( millis() >= lastTimePushed + getDelay() ) {
       pressesFiltered++;
-      changed = true;
       pushed = true;
       lastTimePushed = millis();
     }
   }
+  if ( lastState == BUTTON_DOWN && !isDown() ) {
+    changed = true;
+  }
+  
   lastState = state();
 }
 
@@ -90,7 +102,7 @@ unsigned long Button::getDelay()
 bool Button::isChanged()
 {
   bool saveChanged = changed;
-  changed = false;
+//  changed = false;
   return saveChanged;
 }
 

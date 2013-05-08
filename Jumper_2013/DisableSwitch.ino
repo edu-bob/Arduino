@@ -15,6 +15,7 @@ void DisableSwitch::begin(int _pin)
 
 void DisableSwitch::loop()
 {
+  changed = false;
   // determine if the switch has changed.  This is only used to update the display
   
   int newValue;
@@ -40,7 +41,7 @@ int DisableSwitch::readSwitch()
 bool DisableSwitch::isChanged()
 {
   bool saveChanged = changed;
-  changed = false;
+//  changed = false;
   return saveChanged;
 }
 

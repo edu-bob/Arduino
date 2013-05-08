@@ -11,6 +11,9 @@ class Button {
     bool isDown(void);
     bool wasPressed(void);
     bool isChanged(void);
+    void enable(void) { enabled = true; };
+    void disable(void) { enabled = false; };
+    void clearPressed(void) { pushed = false; };
     unsigned long getDelay(void);
     unsigned long getRawPresses(void) { return pressesRaw; };
     unsigned long getFilteredPresses(void) { return pressesFiltered; };
@@ -18,6 +21,7 @@ class Button {
     void testSetup(void);
     void testLoop(void);
   private:
+    bool enabled;
     bool changed;
     unsigned long pressesRaw;
     unsigned long pressesFiltered;

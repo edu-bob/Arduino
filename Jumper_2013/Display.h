@@ -22,9 +22,12 @@ class Display {
     void print(char *, char *, char *);
     void print(char *, char *, char *, char *);
     void printf(int, int, char *, ... );
+    void printf(char *, ...);
     void setCursor(uint8_t, uint8_t);
   private:
     LiquidCrystal *lcd;
+    char buffer[DISPLAY_COLUMNS*DISPLAY_ROWS+1];
+
 };
 
 #endif

@@ -5,6 +5,8 @@
 void Jumper::setup()
 {
   off();
+  extended = false;
+  active = true;
 }
 
 void Jumper::loop()
@@ -15,16 +17,28 @@ void Jumper::begin(int _pin)
 {
   pin = _pin;
   pinMode(pin, OUTPUT);
-  pinMode(pin, 0);
+  retract();
 }
 
-void Jumper::jump()
+void Jumper::extend()
 {
+  if ( active ) {
+    digitalWrite(pin,1);
+    extended = true;
+  }
+}
+void Jumper::retract()
+{
+  if ( active ) {
+    digitalWrite(pin,0);
+    extended = false;
+  }
 }
 
 void Jumper::off()
 {
   active = false;
+  retract();
 }
 
 void Jumper::on()
