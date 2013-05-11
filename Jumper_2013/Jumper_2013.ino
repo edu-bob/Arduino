@@ -34,9 +34,9 @@ TestMode tester;
 
 void setup()
 {
-//  Serial.begin(9600);
-//  Serial.println(F("Starting..."));
-//  Serial.print(F("Free RAM: "));Serial.println(freeRam());
+  Serial.begin(9600);
+  Serial.println(F("Starting..."));
+  Serial.print(F("Free RAM: "));Serial.println(freeRam());
 
   // First off, set up the LCD in order to display start-up information
   
@@ -69,7 +69,6 @@ void setup()
     options.begin(DIP_PIN_0);
     scoreBoard.begin(Serial1);
     disableSwitch.begin(DISABLE_SWITCH_PIN);
-    sensor.begin(SENSOR_PIN);
 
     jumper.on();
   }
@@ -155,6 +154,8 @@ void loop()
        scoreBoard.clear();
      }
    }
+   
+   Serial.println(sensor.getValue());
 }
 
 void refreshDisplay()
