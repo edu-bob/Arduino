@@ -33,7 +33,9 @@ Sensor sensor;
 
 int tiltOffset;
 unsigned long nextTiltUpdate;
-#define TILTUPDATE 50
+#define TILTUPDATE 500
+int maxTilt;
+#define TILTSAMPLETIME 1250u
 
 // Variables for managing the display of button count information
 unsigned long lastPress;
@@ -46,6 +48,8 @@ unsigned long buttonDelay;
 
 const bool testMode = false;
 TestMode tester;
+
+bool firstLoop = true;
 
 void setup()
 {
@@ -95,6 +99,7 @@ void setup()
 
     jumper.on();
     scoreBoard.scroll(" POSABLES    ");
+    delay(5000u);
     scoreBoard.clear();
 
   }
@@ -127,7 +132,11 @@ void loop()
       sensor.loop();
     }
 
+    if ( firstLoop ) {
+      tiltReset();
+    }
     jumperLogic();
+    firstLoop = false;
   }
 }
 
@@ -150,11 +159,9 @@ void jumperLogic()
       button.enable();
       button.clearPressed();
 
-      // reset the tilt zero value at this point
-      int16_t gyro, acc;
-      sensor.getTilt(gyro, acc);
-      tiltOffset = acc;
-
+      // this is a good time to reset the base tilt value
+      tiltReset();
+      
       // reset the button presses offset
       pressOffset = button.getFilteredPresses();
 
@@ -176,9 +183,12 @@ void jumperLogic()
       if ( options.getValue(OPT_COUNT) ) {
         scoreBoard.show(button.getFilteredPresses() - pressOffset);
       }
+      
+      // work on the maximum tilt value
+      maxTilt = 0;
+      if ( options.getValue(OPT_TILT) ) scoreBoard.clear();
 
-    } 
-    else {
+    } else { // button wasn't pressed
 
       // retract the piston? 
 
@@ -186,25 +196,36 @@ void jumperLogic()
         jumper.retract();
       }
 
-      // Time to reset the press counter to zero?  If so, do it and reset the scoreboard
-      // if the scoreboard is displaying the count.
-
-      if ( millis() > lastPress + PRESS_RESET_TIME ) {
-        pressOffset = button.getFilteredPresses();
-        if ( options.getValue(OPT_COUNT) ) {
-          scoreBoard.show(button.getFilteredPresses() - pressOffset);
-        }
-      }
-
-      // update the scoreboard if displaying the tilt information
-      if ( options.getValue(OPT_TILT) && millis() > nextTiltUpdate ) {
-        int16_t gyro, acc;
-        sensor.getTilt(gyro, acc);
-        scoreBoard.show(acc-tiltOffset);
-        nextTiltUpdate += TILTUPDATE;
-      }
-
     }
+    
+    // Are we still in the tilt watching window?
+    
+    if ( millis() <= lastPress+TILTSAMPLETIME ) {
+      int acc = getTilt() - tiltOffset;
+      if ( maxTilt < acc ) {
+        maxTilt = acc;
+        if ( options.getValue(OPT_TILT) ) scoreBoard.show(maxTilt);
+      }
+    }
+
+    
+    // Time to reset the press counter to zero?  If so, do it and reset the scoreboard
+    // if the scoreboard is displaying the count.
+
+    if ( millis() > lastPress + PRESS_RESET_TIME ) {
+      pressOffset = button.getFilteredPresses();
+      if ( options.getValue(OPT_COUNT) ) {
+        scoreBoard.show(button.getFilteredPresses() - pressOffset);
+      }
+    }
+
+    // update the scoreboard if displaying the tilt information
+//    if ( options.getValue(OPT_TILT) && millis() > nextTiltUpdate ) {
+//      int16_t gyro, acc;
+//      sensor.getTilt(gyro, acc);
+//      scoreBoard.show(acc-tiltOffset);
+//      nextTiltUpdate = millis() + TILTUPDATE;
+//    }
   }
 
   // Display the time delay if it changed by at least ten.  Otherwise the display flutters
@@ -229,7 +250,25 @@ void jumperLogic()
     }
   }
 
+  // This will flicker, but okay
+  int tilt = getTilt();
+  display.printf(15, 2, "%4d", tilt);
 
+}
+
+void tiltReset()
+{
+  // reset the tilt offset to the current value
+  int16_t gyro, acc;
+  sensor.getTilt(gyro, acc);
+  tiltOffset = acc;
+}
+
+int getTilt()
+{
+  int16_t gyro, acc;
+  sensor.getTilt(gyro, acc);
+  return acc;
 }
 
 void refreshDisplay()
