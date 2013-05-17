@@ -36,6 +36,7 @@ void Heartbeat::setup()
 void Heartbeat::loop()
 {
   if ( millis() < nextTime ) return;
+//  Serial.println(millis());
   digitalWrite(PIN_HEARTBEAT, Cycle[state].onoff);
   nextTime += Cycle[state].waitTime;
   state = Cycle[state].nextState;

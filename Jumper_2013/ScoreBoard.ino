@@ -10,44 +10,59 @@ void ScoreBoard::loop()
 void ScoreBoard::begin(HardwareSerial &_serial)
 {
   serial = &_serial;
+  serial->begin(9600);
 }
 
 void ScoreBoard::clear()
 {
-  serial->println("c");
+  serial->print("c");
+  serial->print("\n");
 }
 void ScoreBoard::show(int val)
 {
+  Serial.print(F("show: "));
+  Serial.println(val);
   serial->print("=");
-  serial->println(val);
+  serial->print(val);
+  serial->print("\n");
 }
 void ScoreBoard::show(char *str)
 {
-  serial->print("=");
-  serial->println(str);
+  Serial.print(F("show: "));
+  Serial.println(str);
+  serial->print("s");
+  serial->print(str);
+  serial->print("\n");
 }
 void ScoreBoard::scroll(char *str)
 {
+  Serial.print(F("scroll: "));
+  Serial.println(str);
   serial->print("S");
-  serial->println(str);
+  serial->print(str);
+  serial->print("\n");
 }
 void ScoreBoard::on(void)
 {
-  serial->println("N");
+  serial->print("N");
+  serial->print("\n");
 }
 
 void ScoreBoard::off(void)
 {
-  serial->println("F");
+  serial->print("F");
+  serial->print("\n");
 }
 void ScoreBoard::runTest(int num)
 {
   serial->print("t");
-  serial->println(num);
+  serial->print(num);
+  serial->print("\n");
 }
 void ScoreBoard::pattern(unsigned long hex)
 {
   serial->print("x");
-  serial->println(hex, HEX);
+  serial->print(hex, HEX);
+  serial->print("\n");
 }
 

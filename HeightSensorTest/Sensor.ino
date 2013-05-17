@@ -49,7 +49,7 @@ void Sensor::print()
   int values[6];
   char buf[60];
   getRawValues(values);
-  sprintf(buf, "%7d %7d %7d | %7d %7d %7d",values[0],values[1],values[2],values[3],values[4],values[5]);
+  sprintf(buf, "%7d, %7d, %7d, %7d, %7d, %7d",values[0],values[1],values[2],values[3],values[4],values[5]);
   Serial.println(buf);
 
 }

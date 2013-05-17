@@ -44,7 +44,7 @@ void Button::loop()
    * event every minInterval milliseconds
    */
   if ( lastState == BUTTON_UP && isDown() ) {
-     if ( enabled ) pressesRaw++;
+     pressesRaw++;
      changed = true;
     /*
      * On a transition from up to down, denote it as a button push only if
@@ -52,7 +52,7 @@ void Button::loop()
      */
       
     if ( millis() >= lastTimePushed + getDelay() ) {
-      pressesFiltered++;
+      if ( enabled ) pressesFiltered++;
       pushed = true;
       lastTimePushed = millis();
     }

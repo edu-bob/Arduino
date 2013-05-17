@@ -25,7 +25,6 @@
 void Sensor::setup()
 {
   complement = false;
-  timeout = 500u;
 
   // Join the I2C bus as master
   Wire.begin();
@@ -65,7 +64,6 @@ void Sensor::loop()
     }
   } else {
     Serial.println(F("Failed to read from gyro"));
-    error = true;
   }
   if ( readBytes(ACCEL_ADDR, 0x32, buffer, 6)==6) {
     acc_x = buffer[1]<<8 | buffer[0];
@@ -78,7 +76,6 @@ void Sensor::loop()
     }
   } else {
     Serial.println(F("Failed to read from accelerometer"));
-    error = true;
   }
 }
 
@@ -93,12 +90,6 @@ void Sensor::getValues(int16_t &_temp,
   _acc_x = acc_x;
   _acc_y = acc_y;
   _acc_z = acc_z;
-}
-
-void Sensor::getTilt(int16_t &_gyro_y, int16_t &_acc_x)
-{
-  _gyro_y = gyro_y;
-  _acc_x = acc_x;
 }
 
 void Sensor::print()
@@ -125,18 +116,10 @@ int Sensor::readBytes(uint8_t dev, uint8_t reg, uint8_t *buf, int bytes)
   Wire.requestFrom(dev, (uint8_t)bytes); 
 
   int i;
-  bool timedout = false;
   for ( i=0 ; i<bytes ; i++ ) {
-    unsigned long startTime = millis();
-    while(!Wire.available()) {
-      if ( millis() > startTime+timeout ) {
-        Serial.println(F("I2C timed out"));
-        timedout = true;
-        break;
-      }
-    }
+    while(!Wire.available()); // wait until data available
     *buf++ = Wire.read();    // receive a byte as character
   }
-  return timedout ? 0 : i;
+  return i;
 }
 
