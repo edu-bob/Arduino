@@ -7,14 +7,14 @@ class Button {
   public:
     void setup(void);
     void loop(void);
-    void begin(int, int);
+    void begin(int);
     bool isDown(void);
     bool wasPressed(void);
     bool isChanged(void);
     void enable(void) { enabled = true; };
     void disable(void) { enabled = false; };
     void clearPressed(void) { pushed = false; };
-    unsigned long getDelay(void);
+    void setDelay(unsigned long);
     unsigned long getRawPresses(void) { return pressesRaw; };
     unsigned long getFilteredPresses(void) { return pressesFiltered; };
 
@@ -23,11 +23,11 @@ class Button {
   private:
     bool enabled;
     bool changed;
+    unsigned long delay;
     unsigned long pressesRaw;
     unsigned long pressesFiltered;
     unsigned int state(void);
     int pin;
-    int delayPin;
     unsigned int lastState;
     unsigned long lastTimePushed;
     bool pushed;

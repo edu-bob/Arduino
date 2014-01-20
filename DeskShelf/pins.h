@@ -1,0 +1,14 @@
+
+#define PUSHBUTTON_OUT_PIN 6
+#define PUSHBUTTON_IN_PIN 7
+
+#define LIMIT_IN_PIN 2
+#define LIMIT_NEAR_IN_PIN 3
+#define LIMIT_OUT_PIN 4
+#define LIMIT_NEAR_OUT_PIN 5
+
+#define HEARTBEAT_PIN 13
+
+#define MOTOR_DIRACTION_PIN 10
+#define MOTOR_PIN 11
+

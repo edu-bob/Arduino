@@ -20,24 +20,24 @@ void ScoreBoard::clear()
 }
 void ScoreBoard::show(int val)
 {
-  Serial.print(F("show: "));
-  Serial.println(val);
+//  Serial.print(F("show: "));
+//  Serial.println(val);
   serial->print("=");
   serial->print(val);
   serial->print("\n");
 }
 void ScoreBoard::show(char *str)
 {
-  Serial.print(F("show: "));
-  Serial.println(str);
+//  Serial.print(F("show: "));
+//  Serial.println(str);
   serial->print("s");
   serial->print(str);
   serial->print("\n");
 }
 void ScoreBoard::scroll(char *str)
 {
-  Serial.print(F("scroll: "));
-  Serial.println(str);
+//  Serial.print(F("scroll: "));
+//  Serial.println(str);
   serial->print("S");
   serial->print(str);
   serial->print("\n");

@@ -3,8 +3,6 @@
 #define BUTTON_DOWN LOW
 #define BUTTON_UP HIGH
 
-#define BUTTON_DELAY_MAX 1000ul
-#define BUTTON_DELAY_MIN 200ul
 
 void Button::setup()
 {
@@ -17,10 +15,9 @@ void Button::setup()
  * begin - initialization; save the pin numbers
  */
  
-void Button::begin(int _pin, int _delayPin)
+void Button::begin(int _pin)
 {
   pin = _pin;
-  delayPin = _delayPin;
   pinMode(pin, INPUT_PULLUP);
   
   lastState = state();
@@ -46,12 +43,13 @@ void Button::loop()
   if ( lastState == BUTTON_UP && isDown() ) {
      pressesRaw++;
      changed = true;
+     
     /*
      * On a transition from up to down, denote it as a button push only if
      * enough time has gone by.
      */
       
-    if ( millis() >= lastTimePushed + getDelay() ) {
+    if ( millis() >= lastTimePushed + delay ) {
       if ( enabled ) pressesFiltered++;
       pushed = true;
       lastTimePushed = millis();
@@ -62,6 +60,15 @@ void Button::loop()
   }
   
   lastState = state();
+}
+
+/*
+ * setDelay - set the interbutton press delay
+ */
+ 
+void Button::setDelay(unsigned long val)
+{
+  delay = val;
 }
 
 
@@ -90,13 +97,6 @@ bool Button::isDown()
 unsigned int Button::state()
 {
   return digitalRead(pin);
-}
-
-unsigned long Button::getDelay()
-{
-  unsigned long pot = analogRead(delayPin);
-  unsigned long delay = BUTTON_DELAY_MIN + (unsigned long)(pot * (unsigned long)(BUTTON_DELAY_MAX-BUTTON_DELAY_MIN)) / 1023ul;
-  return (delay > BUTTON_DELAY_MAX ? BUTTON_DELAY_MAX : delay);
 }
 
 bool Button::isChanged()

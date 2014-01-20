@@ -19,7 +19,7 @@
 
 // Miscellaneous pins
 
-#define DELAY_POT_PIN A0
+#define POT_PIN A0
 #define DISABLE_SWITCH_PIN 45
 
 // LCD pins
@@ -42,6 +42,11 @@
 #define DIP_PIN_6 28
 #define DIP_PIN_7 29
 
+// Mode switch
+
+#define MODE_PIN_1 30
+#define MODE_PIN_2 31
+#define MODE_PIN_4 32
 
 #endif
 

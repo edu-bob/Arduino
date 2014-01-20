@@ -10,10 +10,16 @@
 #include "Jumper.h"
 #include "Display.h"
 #include "Options.h"
+#include "ModeSwitch.h"
 #include "ScoreBoard.h"
 #include "DisableSwitch.h"
 #include "Sensor.h"
 #include "Wire.h"
+#include "Pot.h"
+
+// Options:
+//  0: display tilt value
+//  1: display counter
 
 #define OPT_TILT 0
 #define OPT_COUNT 1
@@ -25,9 +31,11 @@ Button button;
 Jumper jumper;
 Display display;
 Options options;
+ModeSwitch modeSwitch;
 ScoreBoard scoreBoard;
 DisableSwitch disableSwitch;
 Sensor sensor;
+Pot pot;
 
 // Variabes for managing the display of tilt information
 
@@ -79,14 +87,16 @@ void setup()
     heart.setup();
 
     button.setup();
-    button.begin(BUTTON_PIN, DELAY_POT_PIN);
+    button.begin(BUTTON_PIN);
 
     jumper.setup();
     jumper.begin(JUMPER_LEGS_PIN);
 
     options.setup();
     options.begin(DIP_PIN_0);
+    modeSwitch.setup();
     scoreBoard.setup();
+    pot.setup();
     scoreBoard.begin(Serial1);
 
     disableSwitch.setup();
@@ -105,7 +115,7 @@ void setup()
   }
   nextTiltUpdate = millis();
   tiltOffset = 0;
-  buttonDelay = button.getDelay();
+  buttonDelay = pot.getValue();
   pressOffset = 0;
   lastPress = millis();
 
@@ -120,12 +130,14 @@ void loop()
 
   if ( testMode ) {
     tester.loop();
-  } 
-  else {
+  }  else {
     heart.loop();
+    pot.loop();
+    button.setDelay(pot.getValue());
     button.loop();
     jumper.loop();
     options.loop();
+    modeSwitch.loop();
     scoreBoard.loop();
     disableSwitch.loop();
     if ( options.getValue(OPT_TILT) ) {
@@ -135,7 +147,20 @@ void loop()
     if ( firstLoop ) {
       tiltReset();
     }
-    jumperLogic();
+    switch ( modeSwitch.getValue() ) {
+      case 0:
+        jumperLogic();
+        // Update the display if any data changed
+        // This is done here so that a different mode can call jumperLogic but use the display for something else.
+        
+        if ( pot.isChanged() || button.isChanged() || options.isChanged() || disableSwitch.isChanged() ) refreshDisplay();
+        break;
+      case 1:
+        break;
+      default:
+        break;
+    }
+        
     firstLoop = false;
   }
 }
@@ -172,8 +197,8 @@ void jumperLogic()
     }
   }
 
-  // If the disable switch is on, skip checking the pushbutton.
-  // This might not be needed in light of the button.disable() feature.
+  // Determine if the jumper should jump
+  
   if ( disableSwitch.isEnabled() ) {
 
     if ( button.wasPressed() ) {
@@ -228,17 +253,6 @@ void jumperLogic()
 //    }
   }
 
-  // Display the time delay if it changed by at least ten.  Otherwise the display flutters
-  // because the A/D converter doesn't return a stable value.
-  bool potChanged = false;
-  unsigned long newDelay = button.getDelay();
-  int delta = (newDelay > buttonDelay) ? (newDelay-buttonDelay) : (buttonDelay-newDelay);
-
-  if ( delta >= 10 ) {
-    buttonDelay = newDelay;
-    potChanged = true;
-  }
-  if (potChanged || button.isChanged() || options.isChanged() || disableSwitch.isChanged() ) refreshDisplay();
 
   // Signal the scoreboard that the jumper is disabled
   if ( disableSwitch.isChanged() ) {
