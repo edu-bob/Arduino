@@ -52,25 +52,33 @@ void shelfLogic()
   // If both buttons are down or both are up, stop the motor
   
   if ( inButton.getStableValue() == outButton.getStableValue() ) {
-    motor.stop();
-  } else if ( inButton.getStableValue() ) {
+    motor.setSpeed(0);
+  } else 
+  
+  // if the shelf-in button is pressed, speed depends on the limit switches
+  if ( inButton.getStableValue() ) {
     if ( limit.isIn() ) {
       motor.stop();
     } else {
+      motor.setDirection(M_IN);
       if ( limit.isNearIn() ) {
-        motor.reverse(M_SLOW);
+        motor.setSpeed(M_SLOW);
       } else {
-        motor.reverse(M_FAST);
+        motor.setSpeed(M_FAST);
       }
     }
-  } else if ( outButton.getStableValue() ) {
+  } else 
+  
+  // If the shelf-out bbutton is pressed, speed depends on the limit switches
+  if ( outButton.getStableValue() ) {
     if ( limit.isOut() ) {
       motor.stop();
     } else {
+      motor.setDirection(M_OUT);
       if ( limit.isNearOut() ) {
-        motor.forward(M_SLOW);
+        motor.setSpeed(M_SLOW);
       } else {
-        motor.forward(M_FAST);
+        motor.setSpeed(M_FAST);
       }
     }
   }
