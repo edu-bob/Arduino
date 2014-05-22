@@ -13,22 +13,22 @@
 //
 
 //
-// This structure defines the actions, delay, and transitions for each state
+// This structure defines the actions and delay for each state
 //
 struct {
   int onoff;
   unsigned long waitTime;
-  int nextState;
 } Cycle[] = {
-  {1, 120, 1},
-  {0, 180, 2},
-  {1, 80, 3},
-  {0, 600, 0}
+  {1, 120},
+  {0, 180},
+  {1, 50},
+  {0, 600}
 };
 
-void Heartbeat::setup()
+void Heartbeat::setup(int _pin)
 {
-  pinMode(HEARTBEAT_PIN, OUTPUT);
+  pin = _pin;
+  pinMode(pin, OUTPUT);
   state = 0;
   nextTime = millis();
 }
@@ -36,9 +36,8 @@ void Heartbeat::setup()
 void Heartbeat::loop()
 {
   if ( millis() < nextTime ) return;
-//  Serial.println(millis());
-  digitalWrite(HEARTBEAT_PIN, Cycle[state].onoff);
+  digitalWrite(pin, Cycle[state].onoff);
   nextTime += Cycle[state].waitTime;
-  state = Cycle[state].nextState;
+  state = (state+1) % (sizeof Cycle / sizeof Cycle[0]);
 }
 

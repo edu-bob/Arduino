@@ -7,6 +7,8 @@
 #define LIMIT_OUT_PIN 4
 #define LIMIT_NEAR_OUT_PIN 5
 
+#define MUSIC_SPEAKER 8
+
 #define HEARTBEAT_PIN 13
 
 #define MOTOR_DIRACTION_PIN 10

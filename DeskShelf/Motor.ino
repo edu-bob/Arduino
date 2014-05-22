@@ -70,6 +70,11 @@ void Motor::stop()
   state = M_STOP;
 }
 
+bool Motor::isOverCurrent()
+{
+  return HWisOverCurrent();
+}
+
 // Hardware controls.
 
 void Motor::HWstop()
@@ -92,4 +97,8 @@ void Motor::HWsetDirection(int _direction)
   Serial.print(F("DIRECTION ")); Serial.println(realDirection);
 }
 
+bool Motor::HWisOverCurrent()
+{
+  return false;
+}
 

@@ -3,9 +3,10 @@
 
 class Heartbeat {
   public:
-    void setup(void);
+    void setup(int);
     void loop(void);
   private:
+    int pin;
     int state;
     unsigned long nextTime;
 };

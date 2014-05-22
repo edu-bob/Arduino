@@ -25,6 +25,7 @@ class Motor {
     void stop(void);
     void setSpeed(int);
     void setDirection(int);
+    bool isOverCurrent(void);
   private:
     int state;
     int requestSpeed;
@@ -35,6 +36,7 @@ class Motor {
     void HWstop(void);
     void HWsetSpeed(int);
     void HWsetDirection(int);
+    bool HWisOverCurrent(void);
 };
 
 #endif
