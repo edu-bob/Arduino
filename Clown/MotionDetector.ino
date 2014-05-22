@@ -17,7 +17,7 @@
 // PIR_CYCLE_TIME - the motion sensor will only return a result after this amount of time (mS) since the last detection
 // This logic shold really be in the calling code.
 
-#define PIR_CYCLE_TIME 10000ul
+#define PIR_CYCLE_TIME 5000ul
 #define PIR_THRESHOLD 200
 
 // PIR_SETTLE_TIME is the initial time delay after startup.

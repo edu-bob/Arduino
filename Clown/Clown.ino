@@ -53,7 +53,10 @@ bool tiltArmed = false;
 // When starting up, this many changes in the Auto switch need to be seen before the
 // motion sensor will be watched.
 //
-#define STARTUP_SWITCH_CHANGES_MIN 3
+// This number was originally 3 and I changed it to 0 because the clown controller
+// spontaneously rebooted a few times at Maker Faire.
+//
+#define STARTUP_SWITCH_CHANGES_MIN 0
 
 
 void setup() {
