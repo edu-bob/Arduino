@@ -8,6 +8,7 @@ Maker Faire Devices
 * Scoreboard - four-digit scoreboard
 * Swing - the Maker Faire Posables swing controller
 * Jumper - the trampoline jumper
+* Climber - the character the climbs a pole
 
 Other devices
 -------------
