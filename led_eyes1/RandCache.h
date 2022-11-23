@@ -3,7 +3,7 @@
 
 #define RANDCACHE_TTL 20ul
 #define RANDCACHE_WINDOW 20ul
-#define RANDCACHE_MAX 5
+#define RANDCACHE_MAX 6
 
 typedef struct {
   int key;

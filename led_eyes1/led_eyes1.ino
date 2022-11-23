@@ -44,6 +44,10 @@ void setup()
   leftEye.setDebug(DEBUG);
 
   nextBlink = millis() + (unsigned long)random(MIN_TIME_TO_BLINK, MAX_TIME_TO_BLINK);
+
+  // on startup, go into a brief alternating mode
+  leftEye.setState(EYE_ALTERNATING);
+  rightEye.setState(EYE_ALTERNATING);
 }
 
 void loop()
