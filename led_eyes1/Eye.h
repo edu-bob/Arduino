@@ -19,13 +19,15 @@ int eyeIdleMaxTimes[] =  { 9000, 1200, 200, 600 };
 
 class Eye {
   public:
-    void setup(int, char *, RandCache *);
+    void setup(int, char *, RandCache *, int);
+    void reset(void);
     void loop(void);
     void setState(EyeState);
     void setDebug(bool);
     bool canBlink(void);
   private:
     int pin;
+    int cycle;
     EyeState state;
     char *label;
     RandCache *rand;

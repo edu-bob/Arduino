@@ -3,6 +3,11 @@
 void RandCache::setup()
 {
   debug = 0;
+  reset();
+}
+
+void RandCache::reset()
+{
   for( int i=0; i<RANDCACHE_MAX; i++ ) {
     cache[i].key = -1;
     cache[i].expiresAt= 0ul;

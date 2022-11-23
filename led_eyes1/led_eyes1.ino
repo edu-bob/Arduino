@@ -37,10 +37,10 @@ void setup()
   randCache.setup();
   randCache.setDebug(DEBUG);
 
-  rightEye.setup(RIGHT_EYE_PIN, "right", &randCache);
+  rightEye.setup(RIGHT_EYE_PIN, "right", &randCache, 0);
   rightEye.setDebug(DEBUG);
   
-  leftEye.setup(LEFT_EYE_PIN, "left",&randCache);
+  leftEye.setup(LEFT_EYE_PIN, "left",&randCache, 1);
   leftEye.setDebug(DEBUG);
 
   nextBlink = millis() + (unsigned long)random(MIN_TIME_TO_BLINK, MAX_TIME_TO_BLINK);

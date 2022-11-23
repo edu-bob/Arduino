@@ -6,15 +6,37 @@
 
 #define EYE_CYCLE_TIME 2000l
 
-void Eye::setup(int _pin, char *_label, RandCache *_rand)
+/**
+ * setup - constructor, sort of, for a new eye
+ *
+ * "cycle" is just a number to determine left from right (from anything else) in case some logic is
+ *    needed to do something different between the two eyes, like alternating blinking.
+ */
+
+void Eye::setup(int _pin, char *_label, RandCache *_rand, int _cycle)
 {
   pin = _pin;
   label = _label;
   rand = _rand;
+  cycle = _cycle;
   debug = 0;
+  reset();
+}
+
+/*
+ * reset - reset the eye to an initial state.
+ *
+ * This is separated from setup in order to allow for re-initializing the eye.
+ */
+
+void Eye::reset()
+{
   pinMode(pin, OUTPUT);
   state = EYE_INVALID;
   setState(EYE_IDLE);
+  actionNextTime = 0;
+  actionBaseTime = 0;
+  rand->reset();
 }
 
 /**

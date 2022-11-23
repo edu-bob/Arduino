@@ -21,6 +21,7 @@ class RandCache {
     int getRandom(int, int, int);
     void dumpCache(void);
     void setDebug(bool);
+    void reset(void);
 
   private:
     bool debug;
