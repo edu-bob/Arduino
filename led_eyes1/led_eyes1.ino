@@ -1,5 +1,6 @@
 /**
  * LED Eyes for Halloween Characters
+ * rlb408, edu-bob, Bob Brown, October 2022
  *
  * Meant to be wired into LEDs in the eyes of my Halloween characters.
  *
@@ -37,17 +38,19 @@ void setup()
   randCache.setup();
   randCache.setDebug(DEBUG);
 
+  // initialize each eye
   rightEye.setup(RIGHT_EYE_PIN, "right", &randCache, 0);
   rightEye.setDebug(DEBUG);
   
-  leftEye.setup(LEFT_EYE_PIN, "left",&randCache, 1);
+  leftEye.setup(LEFT_EYE_PIN, "left", &randCache, 1);
   leftEye.setDebug(DEBUG);
 
+  // set up for the first blink...this doesn't accommodate the start-up, so the first blink might come early
   nextBlink = millis() + (unsigned long)random(MIN_TIME_TO_BLINK, MAX_TIME_TO_BLINK);
 
   // on startup, go into a brief alternating mode
-  leftEye.setState(EYE_ALTERNATING);
-  rightEye.setState(EYE_ALTERNATING);
+  leftEye.setMode(EYE_ALTERNATING);
+  rightEye.setMode(EYE_ALTERNATING);
 }
 
 void loop()
@@ -56,13 +59,12 @@ void loop()
   rightEye.loop();
   leftEye.loop();
 
-  // Blinking can only be initiated in idle state
+  // Blinking can only be initiated in idle state and full on
   if ( rightEye.canBlink() && millis() > nextBlink ) {
     // Serial.println(F("Start blink"));
-    rightEye.setState(EYE_BLINKING);
-    leftEye.setState(EYE_BLINKING);
+    rightEye.setMode(EYE_BLINKING);
+    leftEye.setMode(EYE_BLINKING);
     nextBlink = millis() + (unsigned long)random(MIN_TIME_TO_BLINK, MAX_TIME_TO_BLINK);
-
   }
 }
 

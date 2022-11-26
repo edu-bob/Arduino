@@ -2,15 +2,15 @@
 #define RAND_CACHE_H
 
 #define RANDCACHE_TTL 20ul
-#define RANDCACHE_WINDOW 20ul
+#define RANDCACHE_WINDOW 20ul // cached values will be returned is requested in this much time after set
 #define RANDCACHE_MAX 6
 
+// an item in the keyed random number cache
 typedef struct {
   int key;
   int min;
   int max;
   unsigned long expiresAt;
-  unsigned long lastUsed;
   int value;
 } randcache_t;
 

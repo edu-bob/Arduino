@@ -32,7 +32,7 @@ void Eye::setup(int _pin, char *_label, RandCache *_rand, int _cycle)
 void Eye::reset()
 {
   pinMode(pin, OUTPUT);
-  state = EYE_INVALID;
+  mode = EYE_INVALID;
   actionNextTime = 0;
   actionBaseTime = 0;
   rand->reset();
@@ -47,12 +47,12 @@ void Eye::setDebug(bool _debug)
   debug = _debug;  
 }
 /**
- * Polling routine.  
+ * Polling routine.  Each mode has its own loop method
  */
  
 void Eye::loop()
 {
-  switch (state) {
+  switch (mode) {
     case EYE_IDLE:
       loopIdle();
       break;
@@ -63,26 +63,24 @@ void Eye::loop()
       loopAlternating();
       break;
   }
-  // delay(30);
-  // Serial.print("value ");Serial.println(value);
 }
 
 /**
- * Can the eye blink?  Determines by being in idel state, full on
+ * Can the eye blink?  Determined by being in idle state, full on
  */
 
 bool Eye::canBlink()
 {
-  return state == EYE_IDLE && idleState == EYE_IDLE_STEADY_FULL;
+  return mode == EYE_IDLE && idleState == EYE_IDLE_STEADY_FULL;
 }
 /**
- * Set state
+ * Set mode
  */
 
-void Eye::setState(EyeState _state)
+void Eye::setMode(EyeMode _mode)
 {
-  if ( state != _state ) {
-    switch(state) {
+  if ( mode != _mode ) {
+    switch(mode) {
       case EYE_IDLE: 
         stopIdle();
         break;
@@ -93,8 +91,8 @@ void Eye::setState(EyeState _state)
         stopAlternating();
         break;      
     }
-    state = _state;
-    switch(state) {
+    mode = _mode;
+    switch(mode) {
       case EYE_IDLE:
         startIdle();
         break;
@@ -108,36 +106,18 @@ void Eye::setState(EyeState _state)
   }
 }
 
-void Eye::stopIdle()
-{
-}
-void Eye::stopBlinking()
-{
-}
-void Eye::stopAlternating()
-{
-}
-
+/* -----------------------------------------------------
+ * Idle mode methods
+ */
+ 
 void Eye::startIdle()
 {
   setIdleState(EYE_IDLE_STEADY_FULL);
   setLED(EYE_ON);
 }
-
-void Eye::startBlinking()
+void Eye::stopIdle()
 {
-  setBlinkingState(EYE_BLINKING_CLOSED);
-  blinks = rand->getRandom(EYE_BLINKING_RAND_KEY, 1, 11) <= 7 ? 1 : 2;  
-  setLED(EYE_OFF);
 }
-
-void Eye::startAlternating()
-{
-  setAlternatingState(EYE_ALTERNATING_0);
-  blinks = 7;
-  setLED(EYE_ON);
-}
-
 /**
  * idle mode loop
  */
@@ -173,51 +153,6 @@ void Eye::loopIdle()
   }
 }
 
-void Eye::loopBlinking()
-{
-  switch ( blinkingState ) {
-    case EYE_BLINKING_CLOSED:
-      if ( millis() >= actionNextTime ) {
-        setBlinkingState(EYE_BLINKING_REOPEN);
-        setLED(EYE_ON);
-        break;
-      }
-      case EYE_BLINKING_REOPEN:
-        if ( millis() > actionNextTime ) {
-          if ( --blinks > 0 ) {
-            setBlinkingState(EYE_BLINKING_CLOSED);
-            setLED(EYE_OFF);
-          } else {
-            setState(EYE_IDLE);
-            setLED(EYE_ON);
-          }
-          break;
-        }    
-    }
-}
-void Eye::loopAlternating()
-{
-  switch ( alternatingState ) {
-    case EYE_ALTERNATING_0:
-      if ( millis() >= actionNextTime ) {
-        setAlternatingState(EYE_ALTERNATING_1);
-        setLED(cycle ? EYE_ON : EYE_OFF);
-        break;
-      }
-      case EYE_ALTERNATING_1:
-        if ( millis() > actionNextTime ) {
-          if ( --blinks > 0 ) {
-            setAlternatingState(EYE_ALTERNATING_0);
-            setLED(cycle ? EYE_OFF : EYE_ON);
-          } else { // all done
-            setState(EYE_IDLE);
-            setLED(EYE_ON);
-          }
-          break;
-        }    
-    }
-}
-
 void Eye::setIdleState(EyeIdleState _state)
 {
   int randVal = rand->getRandom(_state, eyeIdleMinTimes[_state],eyeIdleMaxTimes[_state]);
@@ -235,18 +170,98 @@ void Eye::setIdleState(EyeIdleState _state)
   }
 }
 
+/* -----------------------------------------------------
+ * Blinking mode methods
+ */
+ 
+void Eye::startBlinking()
+{
+  setBlinkingState(EYE_BLINKING_CLOSED);
+  // mostly single blinks, some double blinks
+  blinks = rand->getRandom(EYE_BLINKING_RAND_KEY, 1, 11) <= 7 ? 1 : 2;  
+  blink_ms = EYE_BLINKING_MS;
+  setLED(EYE_OFF);
+}
+
+void Eye::stopBlinking()
+{
+}
+void Eye::loopBlinking()
+{
+  switch ( blinkingState ) {
+    case EYE_BLINKING_CLOSED:
+      if ( millis() >= actionNextTime ) {
+        setBlinkingState(EYE_BLINKING_REOPEN);
+        setLED(EYE_ON);
+        break;
+      }
+      case EYE_BLINKING_REOPEN:
+        if ( millis() > actionNextTime ) {
+          if ( --blinks > 0 ) {
+            setBlinkingState(EYE_BLINKING_CLOSED);
+            setLED(EYE_OFF);
+          } else {  // all done, go to Idle mode
+            setMode(EYE_IDLE);
+            setLED(EYE_ON);
+          }
+          break;
+        }    
+    }
+}
 void Eye::setBlinkingState(EyeBlinkingState _state)
 {
   blinkingState = _state;
   actionBaseTime = millis();
-  actionNextTime = millis()+EYE_BLINKING_MS;
+  actionNextTime = millis()+blink_ms;
 }
+
+/* -----------------------------------------------------
+ * Alternating mode methods
+ */
+
+void Eye::startAlternating()
+{
+  setAlternatingState(EYE_ALTERNATING_0);
+  blinks = EYE_ALTERNATING_LOOPS;
+  blink_ms = EYE_ALTERNATING_MS;
+  setLED(EYE_ON);
+}
+void Eye::stopAlternating()
+{
+}
+
+void Eye::loopAlternating()
+{
+  switch ( alternatingState ) {
+    case EYE_ALTERNATING_0:
+      if ( millis() >= actionNextTime ) {
+        setAlternatingState(EYE_ALTERNATING_1);
+        setLED(cycle ? EYE_ON : EYE_OFF);
+        break;
+      }
+      case EYE_ALTERNATING_1:
+        if ( millis() > actionNextTime ) {
+          if ( --blinks > 0 && blink_ms > 1) {
+            setAlternatingState(EYE_ALTERNATING_0);
+            setLED(cycle ? EYE_OFF : EYE_ON);
+          } else { // all done, go to Idle mode
+            setMode(EYE_IDLE);
+            setLED(EYE_ON);
+          }
+          break;
+        }    
+    }
+}
+
 void Eye::setAlternatingState(EyeAlternatingState _state)
 {
   alternatingState = _state;
   actionBaseTime = millis();
-  actionNextTime = millis()+EYE_ALTERNATING_MS;
+  actionNextTime = millis()+blink_ms;
+  blink_ms = blink_ms * 9 / 10;
 }
+
+
 /**
  * setLED - set LED, based on 0..255 scale
 */

@@ -11,7 +11,6 @@ void RandCache::reset()
   for( int i=0; i<RANDCACHE_MAX; i++ ) {
     cache[i].key = -1;
     cache[i].expiresAt= 0ul;
-    cache[i].lastUsed = 0;
     cache[i].min = 0;
     cache[i].max = 0;
     cache[i].value = 0;
@@ -39,7 +38,7 @@ void RandCache::dumpCache()
 }
 /**
  * random - get a random number, given a cache key and a min/max value
- *   key ....... non-negative integer, used to identify a caches random number
+ *   key ....... non-negative integer, used to identify a cached random number
  * 
  * When requesting a random number between two values, return the cached value if
  *  the key, min, and max match and the exxpiration is in the future 
@@ -47,7 +46,8 @@ void RandCache::dumpCache()
 int RandCache::getRandom(int key, int min, int max)
 {
   if ( debug ) {
-    Serial.print(F("key=") );Serial.print(key);Serial.print(F(" min="));Serial.print(min);Serial.print(F(" max="));Serial.print(max);Serial.print(F(" millis="));Serial.println(millis());
+    Serial.print(F("key=") );Serial.print(key);Serial.print(F(" min="));Serial.print(min);
+    Serial.print(F(" max="));Serial.print(max);Serial.print(F(" millis="));Serial.println(millis());
   }    
   for ( int i=0;i<RANDCACHE_MAX;i++ ) {
 
@@ -77,7 +77,7 @@ int RandCache::getRandom(int key, int min, int max)
     }
   }
 
-  // if here, did not find the given key in the cache
+  // if here, did not find the given key in the cache, find an unused or expired slot
   for ( int i=0; i<RANDCACHE_MAX; i++ ) {
     if ( cache[i].key < 0 || millis() > cache[i].expiresAt ) {
       cache[i].key = key;
@@ -91,7 +91,8 @@ int RandCache::getRandom(int key, int min, int max)
       return cache[i].value;
     }
   }
-  // if get here, no cache slots available
+  // if get here, no cache slots available, might fix itself once a slot expires
+  // but increase RANDCACHE_MAX 
   Serial.println(F("No randcache slots available"));
   return random(min,max);
 }
